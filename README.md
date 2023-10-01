@@ -8,8 +8,6 @@ and Bull to craft scalable, efficient, and robust web applications.
 
 ## 📂 Structure
 
-
-
 - **src/app.ts**: The main application entry point.
 - **src/config.ts**: Configuration settings for the application.
 - **src/routes.ts**: Defines the application routes.
@@ -58,7 +56,7 @@ and Bull to craft scalable, efficient, and robust web applications.
 # API Request Examples
 
 ## 1. SignUp Request
-
+### To set your avatar image, you'll need to provide the image in a Base64 encoded format. Here's an example of the expected JSON structure:
 **Endpoint:**  
 `POST` http://localhost:5000/api/v1/signup
 
@@ -69,7 +67,7 @@ and Bull to craft scalable, efficient, and robust web applications.
     "password": "zfq23546ydfg",
     "email": "or3424234assf@gmail.com",
     "avatarColor": "red",
-    "avatarImage": ""
+    "avatarImage": "YOUR_BASE64_ENCODED_IMAGE_HERE"
 }
 ```
 
