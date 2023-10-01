@@ -29,35 +29,6 @@ and Bull to craft scalable, efficient, and robust web applications.
 - **src/shared/services/redis/user.cache.ts**: User cache in Redis.
 - **src/shared/sockets/user.socket.ts**: User socket configuration.
 - **src/shared/workers/auth.worker.ts**: Authentication worker.
-  ts-node-express-redis-bull-template/
-  └── src/
-  ├── app.ts
-  ├── config.ts
-  ├── routes.ts
-  ├── setupDatabase.ts
-  ├── setupServer.ts
-  ├── features/
-  │   ├── auth/
-  │   │   ├── controllers/
-  │   │   ├── interfaces/
-  │   │   ├── models/
-  │   │   ├── routes/
-  │   │   └── schemes/
-  │   └── user/
-  │       ├── interfaces/
-  │       └── models/
-  ├── mocks/
-  └── shared/
-  ├── globals/
-  │   ├── decorators/
-  │   └── helpers/
-  ├── services/
-  │   ├── db/
-  │   ├── emails/
-  │   ├── queues/
-  │   └── redis/
-  ├── sockets/
-  └── workers/
 
 
 ## 🌟 Features
