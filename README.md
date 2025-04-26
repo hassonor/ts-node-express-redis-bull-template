@@ -59,10 +59,10 @@ flowchart LR
   api[Express API]
   db[(MongoDB)]
   redis[(Redis)]
-  queue[Bull Queue]
-  worker[Worker]
+  queue[Bull (Redis)]
+  worker[Worker Process]
   ext[External Services]
-  monitor[Prometheus/Grafana]
+  monitor[Prometheus / Swagger‑Stats]
 
   client -->|HTTPS| api
   api --> db
@@ -71,7 +71,7 @@ flowchart LR
   queue --> worker
   worker --> db
   worker --> ext
-  worker -- pub/sub --> redis
+  worker -- ack / events --> redis
   api -- Socket.IO --> client
   api -. metrics .-> monitor
 ```
