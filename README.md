@@ -61,14 +61,17 @@ flowchart LR
   redis[(Redis)]
   queue[Bull Queue]
   worker[Worker]
+  ext[External Services]
   monitor[Prometheus/Grafana]
 
   client -->|HTTPS| api
   api --> db
   api --> redis
-  api -->|enqueue| queue
+  api -->|enqueue job| queue
   queue --> worker
-  worker -->|events| redis
+  worker --> db
+  worker --> ext
+  worker -- pub/sub --> redis
   api -- Socket.IO --> client
   api -. metrics .-> monitor
 ```
@@ -113,11 +116,10 @@ Open:
 ### 1 · Register
 
 ```bash
-curl -X POST http://localhost:5000/api/v1/auth/register \
+curl -X POST http://localhost:5000/api/v1/signup \
   -H "Content-Type: application/json" \
   -d '{
     "username": "demo",
-    "email": "demo@example.com",
     "password": "P@ssw0rd!"
   }'
 ```
@@ -139,20 +141,35 @@ Expected `201 Created`
 ### 2 · Login
 
 ```bash
-curl -X POST http://localhost:5000/api/v1/auth/login \
+curl -X POST http://localhost:5000/api/v1/signin \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "demo@example.com",
     "password": "P@ssw0rd!"
   }'
 ```
 
 Response includes new `accessToken` and `refreshToken`.
 
+### 3 · Forgot Password
+
+```bash
+curl -X POST http://localhost:5000/api/v1/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "demo@example.com" }'
+```
+
+### 4 · Reset Password
+
+```bash
+curl -X POST http://localhost:5000/api/v1/reset-password/<token> \
+  -H "Content-Type: application/json" \
+  -d '{ "password": "NewP@ss1", "confirmPassword": "NewP@ss1" }'
+```
+
 ### 3 · Access a Protected Route
 
 ```bash
-curl http://localhost:5000/api/v1/users/me \
+curl http://localhost:5000/api/v1/currentUser \
   -H "Authorization: Bearer <accessToken>"
 ```
 
