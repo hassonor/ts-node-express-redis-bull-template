@@ -179,7 +179,7 @@ curl http://localhost:5000/api/v1/jobs/baf7c9cf0b3e
 
 ---
 
-##⚙️ Configuration
+## ⚙️ Configuration
 
 All runtime settings are **environment variables** (12‑Factor). See **`.env.example`** for the full list.
 
