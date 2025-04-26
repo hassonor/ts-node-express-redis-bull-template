@@ -1,123 +1,249 @@
-# TS-Node-Express-Redis-Bull Template
+# TS‑Node · Express · Redis · Bull — Production Template
 
-Welcome to the **TS-Node-Express-Redis-Bull** template!
-Dive into a world-class development experience with this cutting-edge template,
-tailored for developers who seek excellence.
-Harness the power of TypeScript, Node.js, Express, Redis,
-and Bull to craft scalable, efficient, and robust web applications.
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Node >= 18](https://img.shields.io/badge/node-%3E%3D18.x-brightgreen)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178c6?logo=typescript)
 
-## 📂 Structure
+A modern starter kit for building **low‑latency, horizontally‑scalable** REST APIs and real‑time back‑ends with **TypeScript**, **Express**, **MongoDB**, **Redis** and **Bull** queues.  
+It ships with **JWT authentication, Socket.IO, email delivery, background workers, structured logging, and comprehensive tests** out‑of‑the‑box.
 
-- **src/app.ts**: The main application entry point.
-- **src/config.ts**: Configuration settings for the application.
-- **src/routes.ts**: Defines the application routes.
-- **src/setupDatabase.ts**: Set up the database connection.
-- **src/setupServer.ts**: Configures and sets up the Express server.
-- **src/shared/globals/helpers/error-handler.ts**: Global error handler.
-- **src/shared/globals/helpers/helpers.ts**: Utility and helper functions.
-- **src/shared/services/db/auth.service.ts**: Authentication service.
-- **src/shared/services/db/user.service.ts**: User service.
-- **src/shared/services/emails/mail.transport.ts**: Email transport configuration.
-- **src/shared/services/queues/auth.queue.ts**: Authentication queue.
-- **src/shared/services/queues/base.queue.ts**: Base queue.
-- **src/shared/services/queues/email.queue.ts**: Email queue.
-- **src/shared/services/queues/user.queue.ts**: User queue.
-- **src/shared/services/redis/base.cache.ts**: Base cache for Redis.
-- **src/shared/services/redis/redis.connection.ts**: Redis connection setup.
-- **src/shared/services/redis/user.cache.ts**: User cache in Redis.
-- **src/shared/sockets/user.socket.ts**: User socket configuration.
-- **src/shared/workers/auth.worker.ts**: Authentication worker.
+> Skip the boilerplate and get straight to shipping features.
+
+---
+
+## ✨ Highlights
+
+| Area | What you get |
+|------|--------------|
+| **API First** | Clean REST endpoints (OpenAPI ready) + request validation |
+| **Typed from top to bottom** | Strict TypeScript + absolute imports |
+| **Queue processing** | Bull / BullMQ jobs with Bull‑Board UI |
+| **Caching & Pub/Sub** | Redis for both key/value cache and socket cluster |
+| **MongoDB (Mongoose)** | Battle‑tested, schema‑driven ODM |
+| **AuthN & AuthZ** | JWT access/refresh tokens, password hashing, role helpers |
+| **Emails** | Nodemailer + SendGrid transport templates |
+| **Real‑time** | Socket.IO channel with Redis adapter |
+| **Observability** | Bunyan JSON logs, Swagger‑Stats metrics endpoint |
+| **Dev DX** | Nodemon + ts-node, ESLint/Prettier, Jest with coverage |
+| **Cloud ready** | 12‑Factor compliant, `.env` driven configuration |
+
+---
+
+## 📁 Project Layout
+
+```
+src/
+├─ features/          # Domain modules (Auth, User, …)
+│  ├─ auth/
+│  └─ user/
+├─ shared/            # Re‑usable adapters & helpers
+│  ├─ globals/
+│  ├─ services/
+│  │  ├─ db/          # MongoDB data‑access layer
+│  │  ├─ redis/       # Caching abstraction
+│  │  ├─ queues/      # Bull producers
+│  │  └─ workers/     # Job processors
+│  └─ sockets/
+├─ app.ts             # Express initialisation
+├─ routes.ts          # Top‑level router
+└─ …                  # Configs, mocks, tests
+```
+
+---
+
+## 🏗 High‑Level Architecture
+
+```mermaid
+graph LR
+  subgraph Client
+    A[SPA / Mobile App]
+  end
+  A -->|HTTPS| B(Express API)
+  B --> C[MongoDB]
+  B --> D((Redis))
+  B -->|enqueue| E>Bull Queue]
+  E --> F[Worker(s)]
+  F -->|events| D
+  B -- Socket.IO --> A
+  B -. metrics .-> M[Swagger‑Stats / Prometheus]
+```
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# 1. Clone template
+git clone https://github.com/hassonor/ts-node-express-redis-bull-template.git
+cd ts-node-express-redis-bull-template
+
+# 2. Install deps
+npm install
+
+# 3. Copy environment template
+cp .env.example .env   # then fill in secrets
+
+# 4. Start Mongo, Redis & Bull‑Board in Docker (optional)
+docker compose up -d
+
+# 5. Launch API in dev mode
+npm run dev
+```
+
+Open:
+
+* **API docs**: `http://localhost:5000/api-docs`  
+* **Bull‑Board**: `http://localhost:5000/queues`  
+* **Redis Commander**: `http://localhost:8081` (if enabled)
+
+---
 
 
-## 🌟 Features
+---
 
-- **TypeScript**: Strongly-typed JavaScript for better developer experience.
-- **Node.js & Express**: Fast and scalable backend framework.
-- **Redis**: In-memory data structure store used for caching and as a message broker.
-- **Bull**: A Node.js library that provides robust job and message queue based on Redis.
-- **Modular Structure**: Organized and modular code structure for scalability and maintainability.
-- **Error Handling**: Global error handler for handling exceptions and errors.
-- **Authentication**: Built-in authentication using JWT.
-- **Email Service**: Integrated email service for sending emails.
-- **Web Sockets**: Real-time bidirectional event-based communication.
-- **Workers**: Separate workers for handling background tasks.
-  ... and more!
+## 📑 Example API Requests
 
-## Getting Started
+> Use any HTTP client (cURL, [HTTPie](https://httpie.io/), Postman) – replace `localhost:5000` if you mapped a different port.
 
-1. Redis: Set it up with this [Guide](https://redis.io/docs/getting-started/installation/install-redis-on-windows/)
-2. Redis Commander: Get it running with this [Guide](https://www.npmjs.com/package/redis-commander)
-3. Install dependencies: `npm i`
-4. Start the development server: `npm run dev`
-5. Run tests: `npm run test`
-6. Redis Cache URL: `http://localhost:8081`
-7. Bull Queues: `http://localhost:5000/queues/queue/auth`
+### 1 · Register
 
-# API Request Examples
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "demo",
+    "email": "demo@example.com",
+    "password": "P@ssw0rd!"
+  }'
+```
 
-## 1. SignUp Request
-### To set your avatar image, you'll need to provide the image in a Base64 encoded format. Here's an example of the expected JSON structure:
-**Endpoint:**  
-`POST` http://localhost:5000/api/v1/signup
+Expected `201 Created`
 
-**Raw Body:**
 ```json
 {
-    "username": "orh4",
-    "password": "zfq23546ydfg",
-    "email": "or3424234assf@gmail.com",
-    "avatarColor": "red",
-    "avatarImage": "YOUR_BASE64_ENCODED_IMAGE_HERE"
+  "user": {
+    "_id": "6652d3f53acc7b4f1c8c4567",
+    "username": "demo",
+    "email": "demo@example.com"
+  },
+  "accessToken": "<jwt>",
+  "refreshToken": "<jwt>"
 }
 ```
 
-## 2. SignIn Request
+### 2 · Login
 
-**Endpoint:**  
-`POST` http://localhost:5000/api/v1/signin
-
-**Raw Body:**
-```json
-{
-   "username": "orh4",
-   "password": "zfq23546ydfg"
-}
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "demo@example.com",
+    "password": "P@ssw0rd!"
+  }'
 ```
 
-## 3. Forgot Password Request
+Response includes new `accessToken` and `refreshToken`.
 
-**Endpoint:**  
-`POST` http://localhost:5000/api/v1/forgot-password
+### 3 · Access a Protected Route
 
-**Raw Body:**
-```json
-{
-   "email": "or3424234assf@gmail.com"
-}
+```bash
+curl http://localhost:5000/api/v1/users/me \
+  -H "Authorization: Bearer <accessToken>"
 ```
 
-## 4. Reset Password Request
-`Note: You need to paste the token from the mail.
-`
-**Endpoint:**  
-`POST` http://localhost:5000/api/v1/forgot-password/:token
+### 4 · Enqueue an Email Job
 
-**Raw Body:**
-```json
-{
-   "password": "someNewPassword",
-   "confirmPassword": "someNewPassword"
-}
+```bash
+curl -X POST http://localhost:5000/api/v1/jobs/email \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "hello@example.com",
+    "subject": "Welcome!",
+    "body": "<h1>Hello!</h1>"
+  }'
 ```
 
-## 5. SignOut Request
+Returns:
 
-**Endpoint:**  
-`GET` http://localhost:5000/api/v1/signout
+```json
+{ "jobId": "baf7c9cf0b3e" }
+```
 
-## 6. CurrentUser Request
+Monitor it on **Bull‑Board** → `/queues`.
 
-**Endpoint:**  
-`GET` http://localhost:5000/api/v1/currentUser
+### 5 · Check Job Status
 
+```bash
+curl http://localhost:5000/api/v1/jobs/baf7c9cf0b3e
+```
 
+---
+
+##⚙️ Configuration
+
+All runtime settings are **environment variables** (12‑Factor). See **`.env.example`** for the full list.
+
+| Name | Purpose |
+|------|---------|
+| `DATABASE_URI` | MongoDB connection string |
+| `PORT` | Express port (default `5000`) |
+| `JWT_TOKEN` | Secret for signing access tokens |
+| `SECRET_KEY_ONE/TWO` | Refresh‑token encryption keys |
+| `REDIS_HOST` | Redis connection URL |
+| `SENDGRID_API_KEY` | Mail provider credentials |
+| … | _and more_ |
+
+> ✅ Nothing is hard‑coded; safe for containerised or cloud deployment.
+
+---
+
+## 🔧 Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Hot‑reload server with **Nodemon** |
+| `npm run build` | Transpile to `build/` and fix TS path aliases |
+| `npm start` | Run production build with **PM2** cluster |
+| `npm test` | Run **Jest** unit tests with coverage |
+| `npm run lint:fix` | ESLint + Prettier auto‑fix |
+| `npm run seeds:dev` | Seed local database with Faker |
+
+---
+
+## 🛡️ Testing
+
+Unit tests live alongside code and are executed with a single worker to avoid race conditions:
+
+```bash
+npm test           # coverage + JUnit report
+```
+
+---
+
+## 📊 Observability
+
+* **Logs**   Bunyan streams colourised JSON (pretty in dev).  
+* **Metrics** `/stats` exposes API latency, #requests, memory (Swagger‑Stats).  
+* **Health** `/healthz` & `/readyz` endpoints for Kubernetes probes.
+
+---
+
+## 🗺 Roadmap
+
+- [ ] OAuth social login
+- [ ] Rate‑limiter middleware (Redis token‑bucket)
+- [ ] GraphQL layer
+- [ ] Helm chart & GitHub Actions CI
+
+---
+
+## 🤝 Contributing
+
+PRs are welcome! Please open an issue first to discuss any significant change.  
+Run `npm run lint && npm test` before pushing.
+
+---
+
+## 📝 License
+
+Distributed under the **MIT** license — see `LICENSE` for details.
