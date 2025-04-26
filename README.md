@@ -54,18 +54,23 @@ src/
 ## 🏗 High‑Level Architecture
 
 ```mermaid
-graph LR
-  subgraph Client
-    A[SPA / Mobile App]
-  end
-  A -->|HTTPS| B(Express API)
-  B --> C[MongoDB]
-  B --> D((Redis))
-  B -->|enqueue| E>Bull Queue]
-  E --> F[Worker(s)]
-  F -->|events| D
-  B -- Socket.IO --> A
-  B -. metrics .-> M[Swagger‑Stats / Prometheus]
+flowchart LR
+  client[Client]
+  api[Express API]
+  db[(MongoDB)]
+  redis[(Redis)]
+  queue[Bull Queue]
+  worker[Worker]
+  monitor[Prometheus/Grafana]
+
+  client -->|HTTPS| api
+  api --> db
+  api --> redis
+  api -->|enqueue| queue
+  queue --> worker
+  worker -->|events| redis
+  api -- Socket.IO --> client
+  api -. metrics .-> monitor
 ```
 
 ---
